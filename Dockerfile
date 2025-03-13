@@ -1,16 +1,9 @@
-# Step 1: Use a Maven image to build the JAR
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
+FROM eclipse-temurin:17
 WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
-
-# Step 2: Use a lightweight JDK image to run the app
-FROM eclipse-temurin:17-jdk-alpine
-WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
-
-# Expose port 8080 for Cloud Run
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:resolve
+COPY src ./src
 EXPOSE 8080
 
-# Run the application (Cloud Run sets PORT automatically)
-ENTRYPOINT ["java", "-jar", "/app.jar", "--server.port=${PORT}"]
+CMD ["./mvnw", "spring-boot:run" , "-Dspring-boot.run.profiles=prod"]
