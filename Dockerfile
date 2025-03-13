@@ -12,8 +12,5 @@ COPY --from=builder /app/target/*.jar app.jar
 # Expose port 8080 for Cloud Run
 EXPOSE 8080
 
-# Set the PORT environment variable for Cloud Run
-ENV PORT=8080
-
-# Run the application
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Run the application (Cloud Run sets PORT automatically)
+ENTRYPOINT ["java", "-jar", "/app.jar", "--server.port=${PORT}"]
